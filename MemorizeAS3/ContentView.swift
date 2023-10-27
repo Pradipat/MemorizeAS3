@@ -11,11 +11,15 @@ struct ContentView: View {
     let emojiSet1 = ["👻", "🎃", "🕷️", "👹", "💀", "🕸️", "🧙", "🙀"] + ["👻", "🎃", "🕷️", "👹", "💀", "🕸️", "🧙", "🙀"]
     let emojiSet2 = ["🚗","🚎","🛻","🛵","🚛","🚑","🚜","🏎️"] + ["🚗","🚎","🛻","🛵","🚛","🚑","🚜","🏎️"]
     let emojiSet3 = ["🍊","🍋","🍌","🍇","🍑","🍎","🍏","🍓"] + ["🍊","🍋","🍌","🍇","🍑","🍎","🍏","🍓"]
-    let emojis = ["👻", "🎃", "🕷️", "👹", "💀", "🕸️", "🧙", "🙀"] + ["👻", "🎃", "🕷️", "👹", "💀", "🕸️", "🧙", "🙀"]
     
+    @State private var emojis: [String]
     @State var cardCount: Int
+
         init() {
-            _cardCount = State(initialValue: emojis.count)
+            let initialEmojis = emojiSet1
+            
+            self._emojis = State(initialValue: initialEmojis)
+            self._cardCount = State(initialValue: initialEmojis.count)
         }
     
     var body: some View {
@@ -38,7 +42,7 @@ struct ContentView: View {
         LazyVGrid(columns: [GridItem(.adaptive(minimum: 80))]) {
             ForEach(0..<cardCount, id: \.self) { index in
                 CardView(content: emojis[index])
-                    .aspectRatio(2/3, contentMode: .fit)
+                    .aspectRatio(2.1/3, contentMode: .fit)
             }
         }
         .foregroundColor(.orange)
@@ -59,26 +63,20 @@ struct ContentView: View {
         .font(.largeTitle)
     }
     
-    func cardCountAdjuster(by offset: Int, symbol: String) -> some View {
-        Button(action: {
-            cardCount += offset
-        }, label: {
-            Image(systemName: symbol)
-        })
-        .disabled(cardCount + offset < 1 || cardCount + offset > emojis.count)
-    }
-    
-    var cardRemover: some View {
-        cardCountAdjuster(by: -1, symbol: "moon.stars.fill")
-    }
-    
-    var cardAdder: some View {
-        cardCountAdjuster(by: 1, symbol: "rectangle.stack.badge.plus.fill")
-    }
-    
     func themeAdjuster(by offset: String, symbol: String, name: String) -> some View {
         Button(action: {
-            // กระทำที่นี่เมื่อปุ่มถูกกด
+            switch offset {
+            case "emojiSet1":
+                emojis = emojiSet1
+            case "emojiSet2":
+                emojis = emojiSet2
+            case "emojiSet3":
+                emojis = emojiSet3
+            default:
+                break
+            }
+            cardCount = emojis.count
+            emojis.shuffle()
         }) {
             VStack {
                 Image(systemName: symbol)
@@ -89,13 +87,13 @@ struct ContentView: View {
     }
 
     var halloweenTheme: some View {
-        themeAdjuster(by: "halloween", symbol: "moon.stars.fill" , name: "Halloween")
+        themeAdjuster(by: "emojiSet1", symbol: "moon.stars.fill" , name: "Halloween")
     }
     var carTheme: some View {
-        themeAdjuster(by: "car", symbol: "car.side.fill" , name: "Car")
+        themeAdjuster(by: "emojiSet2", symbol: "car.side.fill" , name: "Car")
     }
     var fruitTheme: some View {
-        themeAdjuster(by: "fruit", symbol: "applelogo" , name: "Fruit")
+        themeAdjuster(by: "emojiSet3", symbol: "applelogo" , name: "Fruit")
     }
     
     
